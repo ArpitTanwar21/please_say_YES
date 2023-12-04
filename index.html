@@ -1,0 +1,74 @@
+<html>
+	<head>
+		<title>QR Site</title>
+		<style>
+			#outer {
+				text-align: center;
+				transform: translate(1%, 250%);
+			}
+			div h1 {
+				font-size: 100px
+			}
+			button {
+				font-size: 20px
+			}
+			#yes_button {
+				width: 25%;
+				margin: 10px 20px 10px 5px;
+				padding: 15px 20px 15px 20px;
+				font-size: 60px;
+				border-radius: 45px;
+				background-color: chartreuse;
+			}
+			#no_button {
+				margin: 10px 20px 10px 5px;
+			}
+		</style>
+		<script>
+			// Replace these with your Twilio credentials
+			const accountSid = 'AC974d8aa0f555ff01e94d23de2c78b08b';
+			const authToken = '7b93f595f63183410cccc5e60ab1bd86';
+			const twilioPhoneNumber = '+13132794251';
+
+			// Function to send SMS using Twilio
+			function sendSMS(message) {
+				const toPhoneNumber = '+919582618736';
+				let messageBody = ''
+				if(message == 'Yes')
+					messageBody = "It's Yes"
+				else
+					messageBody = "It's No"
+
+				fetch(`https://api.twilio.com/2010-04-01/Accounts/${accountSid}/Messages.json`, {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/x-www-form-urlencoded',
+						'Authorization': 'Basic ' + btoa(`${accountSid}:${authToken}`)
+					},
+					body: new URLSearchParams({
+						'To': toPhoneNumber,
+						'From': twilioPhoneNumber,
+						'Body': messageBody
+					})
+				})
+				.then(response => response.json())
+				.then(data => {
+					if(data.error_code == null && message == 'Yes')
+						alert('Great! Arpit has won a lottery. See you soon.');
+					else
+						alert('Please take your time, he is much more patient now.')
+				})
+				.catch(error => {
+					console.error('Error sending message:', error);
+				});
+			}
+		</script>
+	</head>
+	<body>
+		<div id="outer">
+			<h1>Sure ?</h1>
+			<div><button id="yes_button" onclick="sendSMS('Yes');">Yes</button></div>
+			<div><button id="no_button" onclick="sendSMS('No');">No</button></div>
+		</div>
+	</body>
+</html>
